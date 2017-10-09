@@ -64,6 +64,7 @@ init([]) ->
     erlang:monotonic_time(),
     erlang:unique_integer()),
   erlang:send_after(1000, self(), tick),
+  erlang:send_after(15000, self(), tick2),
   {ok, #state{}}.
 
 %%--------------------------------------------------------------------
@@ -99,29 +100,23 @@ handle_cast(_Request, State) ->
   {noreply, State}.
 
 
-send(_X) ->
+send1(_X) ->
   Tags = #{ opco => "RU"},
   dogstatsd:increment("inc1", rand:uniform(10), Tags),
   dogstatsd:gauge("gauge1", rand:uniform(10), Tags),
   ok.
 
-%%--------------------------------------------------------------------
-%% @private
-%% @doc
-%% Handling all non call/cast messages
-%%
-%% @spec handle_info(Info, State) -> {noreply, State} |
-%%                                   {noreply, State, Timeout} |
-%%                                   {stop, Reason, State}
-%% @end
-%%--------------------------------------------------------------------
 -spec(handle_info(Info :: timeout() | term(), State :: #state{}) ->
   {noreply, NewState :: #state{}} |
   {noreply, NewState :: #state{}, timeout() | hibernate} |
   {stop, Reason :: term(), NewState :: #state{}}).
 handle_info(tick, State) ->
   erlang:send_after(1000, self(), tick),
-  [send(N) || N <- lists:seq(1,1000)],
+  [send1(N) || N <- lists:seq(1,1000)],
+  {noreply, State};
+handle_info(tick2, State) ->
+  erlang:send_after(15000, self(), tick),
+  spawn(fun()-> [dogstatsd:increment("test.perfomance.inc2", 1)||_ <- lists:seq(1,1000000)] end),
   {noreply, State};
 handle_info(_Info, State) ->
   {noreply, State}.
