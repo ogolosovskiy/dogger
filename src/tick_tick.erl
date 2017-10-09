@@ -111,12 +111,14 @@ send1(_X) ->
   {noreply, NewState :: #state{}, timeout() | hibernate} |
   {stop, Reason :: term(), NewState :: #state{}}).
 handle_info(tick, State) ->
+  %% io:format("tick 1~n"),
   erlang:send_after(1000, self(), tick),
   [send1(N) || N <- lists:seq(1,1000)],
   {noreply, State};
 handle_info(tick2, State) ->
-  erlang:send_after(15000, self(), tick),
-  spawn(fun()-> [dogstatsd:increment("test.perfomance.inc2", 1)||_ <- lists:seq(1,1000000)] end),
+  %% io:format("limon~n"),
+  erlang:send_after(15000, self(), tick2),
+  spawn(fun()-> [dogstatsd:increment("test.perfomance.inc2", rand:uniform(3))||_ <- lists:seq(1,1000000)] end),
   {noreply, State};
 handle_info(_Info, State) ->
   {noreply, State}.
