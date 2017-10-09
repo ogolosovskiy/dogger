@@ -1,0 +1,17 @@
+{application, dogger,
+ [{description, "An OTP application"},
+  {vsn, "0.1.0"},
+  {registered, []},
+  {mod, { dogger_app, []}},
+  {applications,
+   [kernel,
+    stdlib,
+    dogstatsd
+   ]},
+  {env,[]},
+  {modules, []},
+
+  {maintainers, []},
+  {licenses, []},
+  {links, []}
+ ]}.
