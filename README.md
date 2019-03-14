@@ -1,7 +1,8 @@
 dogger
 =====
 
-An OTP application
+An OTP application  
+Simple erlng dogstatsde connector
 
 Build
 -----
